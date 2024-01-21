@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.AlertDialog
 import androidx.compose.material.Button
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
@@ -43,6 +44,9 @@ fun AuthenticationView( authenticationViewModel : AuthenticationViewModel) {
     var confirmPasswordError by remember { mutableStateOf(false) }
     var signInText by remember { mutableStateOf("Create a new account") }
     var loginError by remember { mutableStateOf(false) }
+    var openDialog by remember { mutableStateOf(false) }
+    var openDialogTitle by remember { mutableStateOf("") }
+    var openDialogText by remember { mutableStateOf("") }
     var coroutineScope: CoroutineScope = MainScope()
 
     Column(
@@ -119,7 +123,22 @@ fun AuthenticationView( authenticationViewModel : AuthenticationViewModel) {
                         if (!emailError)
                         {
                             coroutineScope.launch {
-                                val authResult = authenticationViewModel.login(email, password)
+                                val authResult = authenticationViewModel.login(
+                                    email,
+                                    password,
+                                    object : onCompletion {
+                                        override fun onSuccess(token: String) {
+                                            openDialogTitle = "Login Success"
+                                            openDialogText = "Token: ${token}"
+                                            openDialog = true
+                                        }
+
+                                        override fun onError(e: Exception) {
+                                            openDialogTitle = "Error"
+                                            openDialogText = e.message.toString()
+                                            openDialog = true
+                                        }
+                                    })
                                 loginError = (authResult==null)
                             }
                         }
@@ -132,13 +151,16 @@ fun AuthenticationView( authenticationViewModel : AuthenticationViewModel) {
                                 password,
                                 confirmPassword,
                                 object : onCompletion {
-                                    override fun onSuccess(T: Any) {
-                                        emailError = true
+                                    override fun onSuccess(token: String) {
+                                        openDialogTitle = "Account Created Successfully"
+                                        openDialogText = "Token: ${token}"
+                                        openDialog = true
                                     }
 
                                     override fun onError(e: Exception) {
-                                        passwordError = true
-                                        e.printStackTrace()
+                                        openDialogTitle = "Error"
+                                        openDialogText = e.message.toString()
+                                        openDialog = true
                                     }
                                 })
                         }
@@ -169,5 +191,29 @@ fun AuthenticationView( authenticationViewModel : AuthenticationViewModel) {
             },
             modifier = Modifier.fillMaxWidth(),
         )
+
+        if (openDialog) {
+
+            AlertDialog(
+                onDismissRequest = {
+                    openDialog = false
+                },
+                title = {
+                    Text(text = openDialogTitle)
+                },
+                text = {
+                    Text(openDialogText)
+                },
+                confirmButton = {
+                    Button(
+
+                        onClick = {
+                            openDialog = false
+                        }) {
+                        Text("Ok")
+                    }
+                }
+            )
+        }
     }
 }

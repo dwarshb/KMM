@@ -1,4 +1,4 @@
 interface onCompletion {
-    fun onSuccess(T : Any)
+    fun onSuccess(token : String)
     fun onError(e : Exception)
 }
