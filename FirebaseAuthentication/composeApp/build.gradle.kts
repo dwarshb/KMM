@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsCompose)
     alias(libs.plugins.kotlinxSerialization)
+    alias(libs.plugins.sqlDelight)
 }
 
 kotlin {
@@ -39,6 +40,7 @@ kotlin {
             implementation(libs.compose.ui.tooling.preview)
             implementation(libs.androidx.activity.compose)
             implementation(libs.ktor.client.okhttp)
+            implementation(libs.sqldelight.androidDriver)
         }
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -54,11 +56,28 @@ kotlin {
             implementation(libs.moko.mvvm.core)
             implementation(libs.moko.mvvm.compose)
             implementation(libs.kamel)
+            // Navigator
+            implementation(libs.voyager.navigator)
+            //SqlDelight
+            implementation(libs.sqldelight.coroutines)
+            implementation(libs.sqldelight.primitiveAdapters)
         }
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutines.swing)
             implementation(libs.ktor.client.okhttp)
+            implementation(libs.sqldelight.jvmDriver)
+        }
+        iosMain.dependencies {
+            implementation(libs.sqldelight.nativeDriver)
+        }
+    }
+}
+
+sqldelight {
+    databases {
+        create("Database") {
+            packageName.set("com.dwarshb.firebaseauthentication")
         }
     }
 }

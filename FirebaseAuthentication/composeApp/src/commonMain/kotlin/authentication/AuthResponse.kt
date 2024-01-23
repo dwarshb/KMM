@@ -1,3 +1,5 @@
+package authentication
+
 import kotlinx.serialization.Serializable
 
 @Serializable
