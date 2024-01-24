@@ -29,7 +29,8 @@ kotlin {
     ).forEach { iosTarget ->
         iosTarget.binaries.framework {
             baseName = "ComposeApp"
-            isStatic = true
+            isStatic = false
+            linkerOpts.add("-lsqlite3")
         }
     }
     
@@ -80,6 +81,7 @@ sqldelight {
             packageName.set("com.dwarshb.firebaseauthentication")
         }
     }
+    linkSqlite = true
 }
 
 android {

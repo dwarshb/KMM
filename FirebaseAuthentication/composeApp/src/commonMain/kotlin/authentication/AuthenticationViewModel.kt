@@ -12,7 +12,6 @@ import io.ktor.client.statement.bodyAsText
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
-import onCompletion
 
 class AuthenticationViewModel(var sqlDriver: SqlDriver) : ViewModel() {
     private val API_KEY = "AIzaSyA4mmg2LvJMNkljUnIFV7SJRgWlvnHG1-Q"
