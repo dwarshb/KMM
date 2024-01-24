@@ -1,3 +1,20 @@
+# Compose Multiplatform + Firebase Authentication
+![kotlin-version](https://img.shields.io/badge/kotlin-1.9.20-blue)
+[![Platform](https://img.shields.io/badge/Platform-Android-brightgreen.svg)](#)
+[![Platform](https://img.shields.io/badge/Platform-iOS-black.svg)](#)
+[![Platform](https://img.shields.io/badge/Platform-jvm-blue.svg)](#)
+
+![Twitter post - 1](https://github.com/dwarshb/KMM/assets/32565650/505a5fa0-61d8-40ce-bc55-ffce67f319dc)
+
+The project was initial built using [Kotlin Multiplatform Wizard](https://kmp.jetbrains.com/)which gives us complete project setup with required dependencies and libraries. Later files for Authentication and other were added as per the requirement.
+
+# Tech Stack 📚
+- Kotlin Multiplatform
+- Kotlin Coroutines
+- Compose Multiplatform
+- Ktor
+- SQLDelight
+
 This is a Kotlin Multiplatform project targeting Android, iOS, Desktop.
 
 * `/composeApp` is for code that will be shared across your Compose Multiplatform applications.
