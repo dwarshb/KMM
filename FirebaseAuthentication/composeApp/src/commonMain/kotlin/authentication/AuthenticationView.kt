@@ -39,6 +39,7 @@ import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
+import firebase.onCompletion
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
@@ -152,7 +153,7 @@ class AuthenticationView( viewModel : AuthenticationViewModel) : Screen {
                                     val authResult = authenticationViewModel.login(
                                         email,
                                         password,
-                                        object : onCompletion {
+                                        object : onCompletion<String> {
                                             override fun onSuccess(token: String) {
                                                 openDialogTitle = "Login Success"
                                                 openDialogText = "Token: ${token}"
@@ -176,7 +177,7 @@ class AuthenticationView( viewModel : AuthenticationViewModel) : Screen {
                                     email,
                                     password,
                                     confirmPassword,
-                                    object : onCompletion {
+                                    object : onCompletion<String> {
                                         override fun onSuccess(token: String) {
                                             openDialogTitle = "Account Created Successfully"
                                             openDialogText = "Token: ${token}"

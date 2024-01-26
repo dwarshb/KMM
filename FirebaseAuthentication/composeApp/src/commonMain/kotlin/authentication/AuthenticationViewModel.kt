@@ -3,29 +3,27 @@ import app.cash.sqldelight.db.SqlDriver
 import com.dwarshb.firebaseauthentication.Database
 import com.dwarshb.firebaseauthentication.DatabaseQueries
 import dev.icerock.moko.mvvm.viewmodel.ViewModel
-import io.ktor.client.HttpClient
-import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import firebase.AuthResponse
+import firebase.Firebase
+import firebase.onCompletion
 import io.ktor.client.request.header
 import io.ktor.client.request.parameter
 import io.ktor.client.request.post
 import io.ktor.client.statement.bodyAsText
-import io.ktor.serialization.kotlinx.json.json
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 
 class AuthenticationViewModel(var sqlDriver: SqlDriver) : ViewModel() {
     private val API_KEY = "AIzaSyA4mmg2LvJMNkljUnIFV7SJRgWlvnHG1-Q"
-    lateinit var databaseQuery : DatabaseQueries
+    private var databaseQuery : DatabaseQueries
+    var firebase: Firebase = Firebase()
+
     init {
+        firebase.initializeAPI(apiKey = API_KEY)
         val database = Database(sqlDriver)
         databaseQuery = database.databaseQueries
     }
 
-    private val httpClient = HttpClient() {
-        install(ContentNegotiation) {
-            json()
-        }
-    }
     fun validateEmail(email: String): Boolean {
         if (email == "") return false
         val emailRegex = Regex("^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+\$")
@@ -36,52 +34,41 @@ class AuthenticationViewModel(var sqlDriver: SqlDriver) : ViewModel() {
         email: String,
         password: String,
         confirmPassword: String,
-        onCompletion: onCompletion
+        completion: onCompletion<String>
     ) {
         if (password == confirmPassword) {
             viewModelScope.launch {
-                val responseBody = httpClient
-                    .post("https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${API_KEY}") {
-                        header("Content-Type", "application/json")
-                        parameter("email", email)
-                        parameter("password", password)
-                        parameter("returnSecureToken", true)
+                firebase.signUpWithEmailAndPassword(email,password, object : onCompletion<AuthResponse> {
+                    override fun onSuccess(T: AuthResponse) {
+                        storeUserDetails(T)
+                        completion.onSuccess(T.idToken)
                     }
-                if (responseBody.status.value in 200..299) {
-                    val response = Json { ignoreUnknownKeys = true }
-                        .decodeFromString<AuthResponse>(responseBody.bodyAsText())
-                    storeUserDetails(response)
-                    onCompletion.onSuccess(response.idToken)
-                } else {
-                    onCompletion.onError(Exception(responseBody.bodyAsText()))
-                }
+
+                    override fun onError(e: Exception) {
+                        completion.onError(e)
+                    }
+                })
             }
         } else {
-            onCompletion.onError(Exception("Password doesn't match"))
+            completion.onError(Exception("Password doesn't match"))
         }
     }
 
     fun login(
         email: String,
         password: String,
-        onCompletion: onCompletion
+        completion: onCompletion<String>
     ) {
         viewModelScope.launch {
-            val responseBody = httpClient
-                .post("https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${API_KEY}") {
-                    header("Content-Type", "application/json")
-                    parameter("email", email)
-                    parameter("password", password)
-                    parameter("returnSecureToken", true)
+            firebase.login(email,password,object : onCompletion<AuthResponse> {
+                override fun onSuccess(T: AuthResponse) {
+                    storeUserDetails(T)
+                    completion.onSuccess(T.idToken)
                 }
-            if (responseBody.status.value in 200..299) {
-                val response = Json { ignoreUnknownKeys = true }
-                    .decodeFromString<AuthResponse>(responseBody.bodyAsText())
-                storeUserDetails(response)
-                onCompletion.onSuccess(response.idToken)
-            } else {
-                onCompletion.onError(Exception(responseBody.bodyAsText()))
-            }
+                override fun onError(e: Exception) {
+                    completion.onError(e)
+                }
+            })
         }
     }
 
@@ -92,7 +79,7 @@ class AuthenticationViewModel(var sqlDriver: SqlDriver) : ViewModel() {
         )
     }
 
-    internal fun checkSession(onCompletion: onCompletion) {
+    internal fun checkSession(onCompletion: onCompletion<String>) {
         for(user in databaseQuery.selectAllUsers().executeAsList()) {
             println(user.toString())
             if (user!=null) {

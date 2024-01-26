@@ -5,7 +5,7 @@ import androidx.compose.runtime.remember
 import app.cash.sqldelight.db.SqlDriver
 import authentication.AuthenticationView
 import authentication.AuthenticationViewModel
-import authentication.onCompletion
+import firebase.onCompletion
 import cafe.adriel.voyager.navigator.Navigator
 import mainview.MainScreen
 import mainview.MainScreenViewModel
@@ -18,7 +18,7 @@ fun App(sqlDriver: SqlDriver) {
     val mainScreenViewModel = MainScreenViewModel(sqlDriver)
     var sessionExist = remember { mutableStateOf(false) }
     MaterialTheme {
-        authenticationViewModel.checkSession(object : onCompletion {
+        authenticationViewModel.checkSession(object : onCompletion<String> {
             override fun onSuccess(token: String) {
                 sessionExist.value =  true
             }
