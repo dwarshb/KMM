@@ -29,3 +29,15 @@ This is a Kotlin Multiplatform project targeting Android, iOS, Desktop.
 
 
 Learn more about [Kotlin Multiplatform](https://www.jetbrains.com/help/kotlin-multiplatform-dev/get-started.html)…
+
+---
+
+
+<div style="width:100%">
+	<div style="width:50%; display:inline-block">
+		<h2 align="center">
+      :handshake: Open for Contribution
+		</h2>	
+	</div>	
+</div>
+
