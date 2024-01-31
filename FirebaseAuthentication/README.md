@@ -16,10 +16,10 @@ The project was initial built using [Kotlin Multiplatform Wizard](https://kmp.je
 - SQLDelight
 
 # Demo
-https://www.youtube.com/watch?v=jsEEmUXzsLQ
+[![Watch the video](https://img.youtube.com/vi/jsEEmUXzsLQ/maxresdefault.jpg)](https://youtu.be/jsEEmUXzsLQ)
 
 # Blog
-https://medium.com/proandroiddev/exploring-firebase-authentication-in-compose-multiplatform-8a662a30ec8e
+[![Darshan Bhanushali Medium](https://github-readme-medium.vercel.app/?username=developerspace)](https://medium.com/@developerspace)
 
 This is a Kotlin Multiplatform project targeting Android, iOS, Desktop.
 
