@@ -15,6 +15,12 @@ The project was initial built using [Kotlin Multiplatform Wizard](https://kmp.je
 - Ktor
 - SQLDelight
 
+# Demo
+https://www.youtube.com/watch?v=jsEEmUXzsLQ
+
+# Blog
+https://medium.com/proandroiddev/exploring-firebase-authentication-in-compose-multiplatform-8a662a30ec8e
+
 This is a Kotlin Multiplatform project targeting Android, iOS, Desktop.
 
 * `/composeApp` is for code that will be shared across your Compose Multiplatform applications.
