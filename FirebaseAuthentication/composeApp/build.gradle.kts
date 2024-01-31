@@ -1,5 +1,6 @@
 import org.jetbrains.compose.ExperimentalComposeLibrary
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
+import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -11,6 +12,16 @@ plugins {
 
 kotlin {
 
+    js(IR) {
+        moduleName = "composeApp"
+        browser {
+            commonWebpackConfig {
+                outputFileName = "composeApp.js"
+                devServer = (devServer?:KotlinWebpackConfig.DevServer()).copy()
+            }
+        }
+        binaries.executable()
+    }
     androidTarget {
         compilations.all {
             kotlinOptions {
@@ -50,10 +61,12 @@ kotlin {
             implementation(compose.ui)
             @OptIn(ExperimentalComposeLibrary::class)
             implementation(compose.components.resources)
+            implementation(libs.kotlinx.datetime)
 
             implementation(libs.ktor.client.core)
             implementation(libs.ktor.client.content.negotiation)
             implementation(libs.ktor.serialization.kotlinx.json)
+
             implementation(libs.moko.mvvm.core)
             implementation(libs.moko.mvvm.compose)
             implementation(libs.kamel)
@@ -62,12 +75,21 @@ kotlin {
             //SqlDelight
             implementation(libs.sqldelight.coroutines)
             implementation(libs.sqldelight.primitiveAdapters)
+
         }
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutines.swing)
             implementation(libs.ktor.client.okhttp)
             implementation(libs.sqldelight.jvmDriver)
+        }
+        val jsMain by getting {
+            dependencies {
+                implementation(libs.web.worker.driver)
+                implementation(npm("sql.js", "1.8.0"))
+                implementation(devNpm("copy-webpack-plugin", "9.1.0"))
+            }
+            resources.srcDir(layout.buildDirectory.dir("sqlite"))
         }
         iosMain.dependencies {
             implementation(libs.sqldelight.nativeDriver)
@@ -129,4 +151,8 @@ compose.desktop {
             packageVersion = "1.0.0"
         }
     }
+}
+
+compose.experimental {
+    web.application {}
 }

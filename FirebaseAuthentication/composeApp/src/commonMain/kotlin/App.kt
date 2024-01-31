@@ -7,19 +7,30 @@ import authentication.AuthenticationView
 import authentication.AuthenticationViewModel
 import firebase.onCompletion
 import cafe.adriel.voyager.navigator.Navigator
+import com.dwarshb.firebaseauthentication.User
+import firebase.Firebase
+import firebase.FirebaseUser
 import mainview.MainScreen
 import mainview.MainScreenViewModel
-import org.jetbrains.compose.resources.ExperimentalResourceApi
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun App(sqlDriver: SqlDriver) {
-    val authenticationViewModel = AuthenticationViewModel(sqlDriver)
+    val API_KEY = "AIzaSyA4mmg2LvJMNkljUnIFV7SJRgWlvnHG1-Q"
+    val DATABASE_URL = "https://fitnessconnect-3e757-default-rtdb.firebaseio.com"
+    val firebase = Firebase()
+    firebase.initialize(apiKey = API_KEY, databaseUrl = DATABASE_URL)
+
+    val authenticationViewModel = AuthenticationViewModel(firebase,sqlDriver)
     val mainScreenViewModel = MainScreenViewModel(sqlDriver)
     var sessionExist = remember { mutableStateOf(false) }
     MaterialTheme {
-        authenticationViewModel.checkSession(object : onCompletion<String> {
-            override fun onSuccess(token: String) {
+        authenticationViewModel.checkSession(object : onCompletion<User> {
+            override fun onSuccess(currentUser: User) {
+                if (currentUser!=null) {
+                    val firebaseUser = FirebaseUser(
+                        currentUser.email, currentUser.idToken,currentUser.localId.toString())
+                    firebase.setCurrentUser(firebaseUser)
+                }
                 sessionExist.value =  true
             }
 

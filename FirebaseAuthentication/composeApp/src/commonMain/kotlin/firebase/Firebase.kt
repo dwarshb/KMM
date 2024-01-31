@@ -10,50 +10,23 @@ import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 
 class Firebase {
-    private lateinit var API_KEY: String
 
-    private val httpClient = HttpClient() {
-        install(ContentNegotiation) {
-            json()
-        }
+    companion object {
+        private lateinit var API_KEY: String
+        private lateinit var DATABASE_URL: String
+        private lateinit var _currentUser: FirebaseUser
+
+        fun getAPIKey() = API_KEY
+        fun getDatabaseURL() = DATABASE_URL
+        fun getCurrentUser() = _currentUser
     }
-    fun initializeAPI(apiKey: String) {
+
+    fun initialize(apiKey: String, databaseUrl: String) {
         API_KEY = apiKey
+        DATABASE_URL = databaseUrl
     }
 
-    suspend fun signUpWithEmailAndPassword(
-        email: String, password: String, onCompletion: onCompletion<AuthResponse>) {
-        val responseBody = httpClient
-            .post("https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${API_KEY}") {
-                header("Content-Type", "application/json")
-                parameter("email", email)
-                parameter("password", password)
-                parameter("returnSecureToken", true)
-            }
-        if (responseBody.status.value in 200..299) {
-            val response = Json { ignoreUnknownKeys = true }
-                .decodeFromString<AuthResponse>(responseBody.bodyAsText())
-            onCompletion.onSuccess(response)
-        } else {
-            onCompletion.onError(Exception(responseBody.bodyAsText()))
-        }
-    }
-
-    suspend fun login(
-        email: String, password: String, onCompletion: onCompletion<AuthResponse>) {
-        val responseBody = httpClient
-            .post("https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${API_KEY}") {
-                header("Content-Type", "application/json")
-                parameter("email", email)
-                parameter("password", password)
-                parameter("returnSecureToken", true)
-            }
-        if (responseBody.status.value in 200..299) {
-            val response = Json { ignoreUnknownKeys = true }
-                .decodeFromString<AuthResponse>(responseBody.bodyAsText())
-            onCompletion.onSuccess(response)
-        } else {
-            onCompletion.onError(Exception(responseBody.bodyAsText()))
-        }
+    fun setCurrentUser(currentUser: FirebaseUser) {
+        _currentUser = currentUser
     }
 }

@@ -26,6 +26,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -39,7 +40,10 @@ import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
+import firebase.FirebaseDatabase
+import firebase.FirebaseUser
 import firebase.onCompletion
+import io.ktor.http.parameters
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
@@ -48,7 +52,7 @@ import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 
 
-class AuthenticationView( viewModel : AuthenticationViewModel) : Screen {
+class AuthenticationView(viewModel : AuthenticationViewModel) : Screen {
     val authenticationViewModel = viewModel
     @OptIn(ExperimentalResourceApi::class)
     @Composable
@@ -65,8 +69,8 @@ class AuthenticationView( viewModel : AuthenticationViewModel) : Screen {
         var openDialog by remember { mutableStateOf(false) }
         var openDialogTitle by remember { mutableStateOf("") }
         var openDialogText by remember { mutableStateOf("") }
-        var coroutineScope: CoroutineScope = MainScope()
         val navigator = LocalNavigator.currentOrThrow
+        val coroutineScope = rememberCoroutineScope()
 
         Column(
             modifier = Modifier
@@ -150,7 +154,7 @@ class AuthenticationView( viewModel : AuthenticationViewModel) : Screen {
                             emailValid = authenticationViewModel.validateEmail(email)
                             if (emailValid) {
                                 coroutineScope.launch {
-                                    val authResult = authenticationViewModel.login(
+                                    authenticationViewModel.login(
                                         email,
                                         password,
                                         object : onCompletion<String> {
@@ -173,23 +177,25 @@ class AuthenticationView( viewModel : AuthenticationViewModel) : Screen {
                         false -> {
                             var emailValid = authenticationViewModel.validateEmail(email)
                             if (emailValid) {
-                                authenticationViewModel.signUp(
-                                    email,
-                                    password,
-                                    confirmPassword,
-                                    object : onCompletion<String> {
-                                        override fun onSuccess(token: String) {
-                                            openDialogTitle = "Account Created Successfully"
-                                            openDialogText = "Token: ${token}"
-                                            openDialog = true
-                                        }
+                                coroutineScope.launch {
+                                    authenticationViewModel.signUp(
+                                        email,
+                                        password,
+                                        confirmPassword,
+                                        object : onCompletion<String> {
+                                            override fun onSuccess(token: String) {
+                                                openDialogTitle = "Account Created Successfully"
+                                                openDialogText = "Token: ${token}"
+                                                openDialog = true
+                                            }
 
-                                        override fun onError(e: Exception) {
-                                            openDialogTitle = "Error"
-                                            openDialogText = e.message.toString()
-                                            openDialog = true
-                                        }
-                                    })
+                                            override fun onError(e: Exception) {
+                                                openDialogTitle = "Error"
+                                                openDialogText = e.message.toString()
+                                                openDialog = true
+                                            }
+                                        })
+                                }
                             }
                         }
                     }
