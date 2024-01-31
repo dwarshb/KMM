@@ -16,7 +16,7 @@ The project was initial built using [Kotlin Multiplatform Wizard](https://kmp.je
 - SQLDelight
 
 # Demo
-[![Watch the video](https://img.youtube.com/vi/jsEEmUXzsLQ/maxresdefault.jpg)](https://youtu.be/jsEEmUXzsLQ)
+[![Watch the video](https://img.youtube.com/vi/vp1hY3ESpF4/maxresdefault.jpg)](https://youtu.be/vp1hY3ESpF4)
 
 # Blog
 [![Darshan Bhanushali Medium](https://github-readme-medium.vercel.app/?username=developerspace)](https://medium.com/@developerspace)
