@@ -1,6 +1,8 @@
-package com.dwarshb.firebase
+package firebase
 
-
+import File
+import com.dwarshb.firebaseauthentication.User
+import io.kamel.core.utils.URL
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.plugins.HttpRedirect
@@ -64,7 +66,7 @@ class FirebaseStorage() {
         file: File,
         onCompletion: onCompletion<String>) {
         val fileBytes = file.byteArray
-        val idToken = currentUser?.idToken
+        val idToken = currentUser.idToken
         val childPath = child.joinToString("/")
         println("Path: ${fileBytes}")
         val responseBody = httpClient.post("${STORAGE_URL}?uploadType=media&name=messages/${file.name}") {
@@ -87,7 +89,7 @@ class FirebaseStorage() {
         child: List<String>,
         query: String,
         onCompletion: onCompletion<String>) {
-        val idToken = currentUser?.idToken
+        val idToken = currentUser.idToken
         val childPath = child.joinToString("/")
 
         val responseBody = httpClient
@@ -113,7 +115,7 @@ class FirebaseStorage() {
     fun getEventsFlow(child: List<String>, query: String): Flow<Event> = flow {
         coroutineScope {
             while (isActive) {
-                val idToken = currentUser?.idToken
+                val idToken = currentUser.idToken
                 val childPath = child.joinToString("/")
 
                 val conn = httpClient.prepareGet(
